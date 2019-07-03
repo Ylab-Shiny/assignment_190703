@@ -8,8 +8,6 @@ library(hms)
 
 # ディレクトリ ------------------------------------------------------------------
 
-user_dir <- Sys.getenv("USERPROFILE")
-data_dir <- paste0(user_dir, "\\Dropbox\\Yamaha-lab\\0_semi\\2019Temp\\5years data\\")
 
 # 外れ値の検出とNAに置き換える関数 ----------------------------------------------------------
 
@@ -41,10 +39,8 @@ RepOutliersNA <- function(column) {
 
 # データの読み込み ----------------------------------------------------------------
 
-setwd(data_dir)
 # 2018年度のデータ
 year2018 <- read_csv("year2018.csv")
-year2018 <- year2018 %>% select(-ﾌﾛﾝﾃｨｱ研究棟電力量) %>% as_tibble()
 
 # 列番号をコンソールで入力
 prompt_message <- paste0("列番号を入力してください(2 ~ ", length(colnames(year2018)), "): ")
@@ -69,26 +65,25 @@ data_heatmap <- dataset %>%
          week = format(as.POSIXct(label), "%W"),
          month = format(as.POSIXct(label), "%m"))
 
-ggsave(filename, plot = last_plot(), device = NULL, path = NULL,yaer2018
-the_month <- readline(prompt = "月を入力してください(01 ~ 12): ")
+# the_month <- readline(prompt = "月を入力してください(01 ~ 12): ")
 
 
-data_heatmap2 <- data_heatmap %>% filter(month == the_month) # 行方向に検索 1か月分のデータ
+# data_heatmap2 <- data_heatmap %>% filter(month == the_month) # 行方向に検索 上のthemonthの選択を読み込む
 
-gp <- ggplot(data_heatmap2, aes(x=day, y=time)) + 
-  geom_raster(aes_string(fill=the_colname2)) + scale_fill_gradient(low="blue", high="orange") +
+gp <- ggplot(data = data_heatmap, aes(x=day, y=time)) + 
+  geom_raster(aes_string(fill=the_colname)) + scale_fill_gradient(low="blue", high="orange") +
   coord_cartesian(expand = F) + labs(fill=the_colname)
 print(gp)
 
 
-# # ラベルの調整
-# br = seq(0, 86400, 7200)
-# lab = c("00:00", "02:00", "04:00","06:00","08:00","10:00","12:00","14:00","16:00","18:00","20:00","22:00","24:00")
-# 
-# gp2 <- gp + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
-#   scale_y_reverse(breaks = br, labels = lab) + 
-#   scale_x_date(breaks = date_breaks("1 day"), date_labels = "%y/%m/%d") +
-#   labs(fill="凡例") + ggtitle(paste0(the_colname, "のヒートマップ")) +
-#   theme(axis.text.x = element_text(size = 15), axis.text.y = element_text(size = 15), 
-#         axis.title = element_blank(), title = element_text(size = 15, face = "bold"))
-# print(gp2) # 保存するサイズ(width=1800, height=750)  
+# ラベルの調整
+br = seq(0, 86400, 7200)
+lab = c("00:00", "02:00", "04:00","06:00","08:00","10:00","12:00","14:00","16:00","18:00","20:00","22:00","24:00")
+
+gp2 <- gp + theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  scale_y_reverse(breaks = br, labels = lab) +
+  scale_x_date(breaks = date_breaks("1 month"), date_labels = "%y/%m/%d") +
+  labs(fill="凡例") + ggtitle(paste0(the_colname, "のヒートマップ")) +
+  theme(axis.text.x = element_text(size = 15), axis.text.y = element_text(size = 15),
+        axis.title = element_blank(), title = element_text(size = 15, face = "bold"))
+print(gp2) # 保存するサイズ(width=1800, height=750)
