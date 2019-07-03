@@ -62,25 +62,23 @@ data_heatmap <- dataset %>%
          time = as.hms(substr(label, 12, 19)),
          week = format(as.POSIXct(label),"%W"),
         month  = format(as.POSIXct(label), "%m")) 
-         xlim(1, max(PlantGrowth$weight))
-         expand_limits(x=0)
          
          
-data_heatmap2 <- data_heatmap %>% filter(month == the_month)
+# data_heatmap2 <- data_heatmap %>% filter(month == "05")
 
-gp <- ggplot(data_heatmap2, aes(x=week, y=time)) +
+gp <- ggplot(data = data_heatmap, aes(x=day, y=time)) +
   geom_raster(aes_string(fill=the_colname)) + scale_fill_gradient(low="blue", high="orange") +
   coord_cartesian(expand = F) 
 print(gp)
 
-# # ラベルの調整
-# br = seq(0, 86400, 7200)
-# lab = c("00:00", "02:00", "04:00","06:00","08:00","10:00","12:00","14:00","16:00","18:00","20:00","22:00","24:00")
-# 
-# gp2 <- gp + theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-#   scale_y_reverse(breaks = br, labels = lab) +
-#   scale_x_date(breaks = date_breaks("1 day"), date_labels = "%y/%m/%d") +
-#   labs(fill="凡例") + ggtitle(paste0(the_colname, "のヒートマップ")) +
-#   theme(axis.text.x = element_text(size = 15), axis.text.y = element_text(size = 15),
-#         axis.title = element_blank(), title = element_text(size = 15, face = "bold"))
-# print(gp2) # 保存するサイズ(width=1800, height=750)
+# ラベルの調整
+br = seq(0, 86400, 7200) # 単位：秒
+lab = c("00:00", "02:00", "04:00","06:00","08:00","10:00","12:00","14:00","16:00","18:00","20:00","22:00","24:00")
+
+gp2 <- gp + theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  scale_y_reverse(breaks = br, labels = lab) +
+  scale_x_date(breaks = date_breaks("1 month"), date_labels = "%y/%m/%d") +
+  labs(fill="凡例") + ggtitle(paste0(the_colname, "のヒートマップ")) +
+  theme(axis.text.x = element_text(size = 15), axis.text.y = element_text(size = 15),
+        axis.title = element_blank(), title = element_text(size = 15, face = "bold"))
+print(gp2) # 保存するサイズ(width=1800, height=750)
